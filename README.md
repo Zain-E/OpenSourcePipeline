@@ -1,16 +1,16 @@
-# **AWS-AIRBYTE-PIPELINE**
+# **OPEN-SOURCE-PIPELINE**
 
 This repo will ingest data from numerous different sources into an aws account and then model the data
 through a data warehouse and analytical layer.  The purpose of this project is:
 
 1. To create a cost-efficient pipeline that can be replicated at scale
 2. To utilise non-standard practices that may be better than the oft-repeated "best practice"
-3. To use [Airbyte](https://airbyte.com/product/airbyte-open-source), [Dagster](https://dagster.io/) (and perhaps other services like dbt), and [AWS](https://aws.amazon.com/?nc2=h_lg) services all in one complete repo, which has not been done in a singular repo before.
+3. To use open-source tools (that are also scalable) as much as possible to compliement point 1. [dlthub](https://dlthub.com/), [Airbyte](https://airbyte.com/product/airbyte-open-source), [Dagster](https://dagster.io/) (and perhaps other services like dbt), and [AWS](https://aws.amazon.com/?nc2=h_lg) are services that will be used in this repo, which can be used as a template for future work.
 
 
-## Airbyte Developer Notes
+## dltHub Developer Notes
 
-![airbyte](assets/airbyte.png)
+<img src="assets/dlthub-logo.png" alt="Description" width="300" height="100"/>
 
 - Use of virtual environments is recommended, especially if you work on multiple client/internal projects requiring conflicting dbt or Python versions
 - Set up your local profiles.yml, you will need to direct the ./run filepath to the location of your profiles.yml & dbt_project.yml files (lines 3 + 4):
@@ -39,7 +39,7 @@ through a data warehouse and analytical layer.  The purpose of this project is:
 
 ## AWS folder structure
 
-<img src="assets/aws-icon.png" alt="Description" width="300" height="150"/>
+<img src="assets/aws-icon.png" alt="Description" width="150" height="100"/>
 
 The folder structure used in this project is aligned to general best practices with a number of layers, a staging (ephemeral) layer,  warehouse (table) layer, analytics (table) layer and semantics (view) layer.  Depending on the tool, the final layer may not be necessary but have been added as Looker Data Studio has minimal modelling capabilites. 
 
