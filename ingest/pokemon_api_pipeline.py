@@ -30,34 +30,18 @@ def load_pokemon() -> None:
                 },
                 "write_disposition": "replace", 
             },
-            "resources": [
+            "resources":[
                 {
-                "name": "pokemon",
-                "primary_key": "name",
-                "write_disposition": "replace",
-                },
-                {
-                "name": "berry",
-                "primary_key": "name",
-                "write_disposition": "replace",
-                },
-                {
-                "name": "location",
-                "primary_key": "name",
-                "write_disposition": "replace",
-                },
-                {
-                "name": "item",
-                "primary_key": "name",
-                "write_disposition": "merge",
-                },
-                {
-                "name": "move",
-                "primary_key": "name",
-                "write_disposition": "replace",
-                },
+                 "name": "pokemon",
+                 "primary_key": "name",
+                 "write_disposition": "replace",
+                }, 
+                "berry", 
+                "location", 
+                "item", 
+                "move",
+                "version"
             ],
-            # "resources":["pokemon", "berry", "location", "item", "move"],
         }
     )
 

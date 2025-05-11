@@ -5,7 +5,7 @@ through a data warehouse and analytical layer.  The purpose of this project is:
 
 1. To create a cost-efficient pipeline that can be replicated at scale
 2. To utilise non-standard practices that may be better than the oft-repeated "best practice"
-3. To use open-source tools (that are also scalable) as much as possible to compliement point 1. [dlthub](https://dlthub.com/), [Airbyte](https://airbyte.com/product/airbyte-open-source), [Dagster](https://dagster.io/) (and perhaps other services like dbt), and [AWS](https://aws.amazon.com/?nc2=h_lg) are services that will be used in this repo, which can be used as a template for future work.
+3. To use open-source tools (that are also scalable) as much as possible to compliment point 1. [dlthub](https://dlthub.com/), [Airbyte](https://airbyte.com/product/airbyte-open-source), [dbt](https://docs.getdbt.com/docs/core/installation-overview) (and perhaps other services like dagster), and [AWS](https://aws.amazon.com/?nc2=h_lg) are services that will be used in this repo, which can be used as a template for future work.
 
 
 ## dltHub Developer Notes
