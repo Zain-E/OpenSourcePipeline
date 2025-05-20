@@ -7,75 +7,87 @@ import polars as pl
 from google.cloud import bigquery
 from google.oauth2 import service_account
 from constants import BIGQUERY_SERVICE_ACCOUNT_FILE, PROJECT_ID
-from tqdm import tqdm
-import math
+import gcsfs
 
-
-def gbq_to_df(table_name: str, desired_chunk_size: int) -> pl.DataFrame:
+def gbq_to_gcs_storage(full_table_name: str, bucket_name: str) -> str:
     """
-    Load data from a BigQuery table in chunks and output as a Polars DataFrame.
+    Load data from a BigQuery table into GCS (Google Cloud Storage).
+    This is because the data will be and faster to process in smaller file chunks.
+    Saves data in parquet format.
     
     Args:
-        table_name (str): The (full) name of the BigQuery table to load
-        desired_chunk_size (int): The desired size of each chunk to load
+        full_table_name (str): The (full) name of the BigQuery table to save
+        bucket_name (str): The name of the GCS bucket to save the data
+    Returns:
+        a statement indicating the table has been saved to GCS.
+    
+    """
+    credentials = service_account.Credentials.from_service_account_file(BIGQUERY_SERVICE_ACCOUNT_FILE)
+    project_id = PROJECT_ID
+    client = bigquery.Client(credentials=credentials, project=project_id)
+    project, dataset_id, table_id = full_table_name.split('.')
+
+    destination_uri = "gs://{}/{}".format(bucket_name, f"{table_id}-*.parquet")
+    dataset_ref = bigquery.DatasetReference(project, dataset_id)
+    table_ref = dataset_ref.table(table_id)
+
+    job_config = bigquery.job.ExtractJobConfig(destination_format=bigquery.DestinationFormat.PARQUET)
+    extract_job = client.extract_table(
+        table_ref,
+        destination_uri,
+        location="US",
+        job_config=job_config
+    )
+    extract_job.result()
+    return print("Exported {}:{}.{} to {}".format(project, dataset_id, table_id, destination_uri)) 
+
+
+def gcs_to_df(full_table_name:str, bucket_name: str) -> pl.DataFrame:
+    """
+    Load multiple files from a GCS (Google Cloud Storage) bucket into a Polars DataFrame (lazily).
+    
+    Args:
+        full_table_name (str): The (full) name of the BigQuery table to load
+        bucket_name (str): The name of the GCS bucket to load the data from
     Returns:
         pl.DataFrame: A Polars DataFrame containing the loaded data.
     
     """
-    # Method is still far too slow! (around 4 hours for 4.5 million rows)
-
-
     credentials = service_account.Credentials.from_service_account_file(BIGQUERY_SERVICE_ACCOUNT_FILE)
     project_id = PROJECT_ID
     client = bigquery.Client(credentials=credentials, project=project_id)
+    _, _, table_id = full_table_name.split('.')
+    fs = gcsfs.GCSFileSystem()
+    gcs_file_path = f"gs://{bucket_name}/{table_id}-*.parquet"
+    try:
+        lf = pl.scan_parquet(gcs_file_path)
 
-    count_query = f"SELECT COUNT(*) as row_count FROM {table_name}"
-    total_rows = client.query(count_query).result().to_dataframe()["row_count"][0]
-    total_chunks = math.ceil(total_rows / desired_chunk_size)
+        print("\nLazy Polars DataFrame created. Collecting results (this will read data):")
+        df_collected = lf.collect() # Data is read and processed here
+
+        print(df_collected.head())
+        print(f"\nCollected DataFrame shape: {df_collected.shape}")
+
+    except Exception as e:
+        print(f"Error with lazy loading Polars: {e}")
+
+    return df_collected
 
 
-    all_chunks = []
-
-    for i in tqdm(range(total_chunks), desc=f"Loading chunks from BigQuery table: {table_name}"):
-        lower = i * desired_chunk_size
-        upper = (i + 1) * desired_chunk_size
-
-        sql = f"""
-        WITH numbered AS (
-            SELECT *, ROW_NUMBER() OVER () AS rn
-            FROM {table_name}
-        )
-        SELECT * EXCEPT(rn)
-        FROM numbered
-        WHERE rn > {lower} AND rn <= {upper}
-        """
-
-        query = client.query(sql)
-        rows = query.result()
-        df = pl.from_arrow(rows.to_arrow())
-
-        if df.is_empty():
-            tqdm.write(f"No more data at chunk {i+1}. Stopping.")
-            break
-
-        all_chunks.append(df)
-
-    if all_chunks:
-        final_df = pl.concat(all_chunks, how="vertical")
-        return final_df
-    else:
-        raise ValueError("No data was loaded from BigQuery.")
-
-def gbq_to_file_system(full_table_name: str) -> None:
+def df_to_file_system(full_table_name:str, df:pl.DataFrame) -> str:
     """
     Landnerds pipeline to load from a df to s3 storage.
+
+    Args:
+        full_table_name (str): The (full) name of the BigQuery table to load
+        df (pl.DataFrame): The Polars DataFrame to load
+    Returns:
+        statement indicating the table has been saved to the filesystem.
     
     """
     table_name = full_table_name.split(".")[-1]
-
-    data = gbq_to_df(full_table_name, 10000)
-    records = data.to_dicts()
-    resource = dlt.resource(records, name=table_name)
+    arrow_table = df.to_arrow()
+    resource = dlt.resource(arrow_table, name=table_name)
 
     # Create a dlt pipeline object
     pipeline = dlt.pipeline(
@@ -88,7 +100,15 @@ def gbq_to_file_system(full_table_name: str) -> None:
     load_info = pipeline.run(resource, loader_file_format="parquet")
 
     # Pretty print load information
-    print(load_info)
+    print(f"dlt load data: {load_info}")
+    print(f"dataset of shape: {df.shape} uploaded!")
+
 
 if __name__ == '__main__':
-    gbq_to_file_system("landnerds.3_data_analytics.all_census_2021")
+    full_table_name = "landnerds.3_data_analytics.all_properties"
+    bucket_name = "landnerds/3_data_analytics/all_properties"
+
+    gbq_to_gcs_storage(full_table_name, bucket_name)
+    df = gcs_to_df(full_table_name, bucket_name)
+    df_to_file_system(full_table_name, df)
+    # (30,876,355 rows) 22:10pm start - 22:17pm end, 7 minutes!
