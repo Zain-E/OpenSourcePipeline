@@ -26,6 +26,8 @@ S3_BUCKET_URL = os.getenv("S3_POKEAPI_BUCKET_URL")
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_REGION = os.getenv("AWS_REGION")
+REDDIT_CLIENT_ID = os.getenv("REDDIT_CLIENT_ID")
+REDDIT_SECRET = os.getenv("REDDIT_SECRET")
 
 # dbt constants
 dbt_project_path = "/Users/zaineisa/Documents/VSCode/LandNerds_orchestration/LandNerds_datapipeline/landnerds"

@@ -105,10 +105,9 @@ def df_to_file_system(full_table_name:str, df:pl.DataFrame) -> str:
 
 
 if __name__ == '__main__':
-    full_table_name = "landnerds.3_data_analytics.all_properties"
-    bucket_name = "landnerds/3_data_analytics/all_properties"
+    full_table_name = "landnerds.1_data_lake.all_prop_point_of_interest"
+    bucket_name = "landnerds/3_data_analytics/all_prop_point_of_interest"
 
     gbq_to_gcs_storage(full_table_name, bucket_name)
     df = gcs_to_df(full_table_name, bucket_name)
     df_to_file_system(full_table_name, df)
-    # (30,876,355 rows) 22:10pm start - 22:17pm end, 7 minutes!
