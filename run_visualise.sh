@@ -5,4 +5,5 @@ chmod +x run_visualise.sh
 source .venv/bin/activate
 
 # Run the Streamlit app
+python black .
 streamlit run visualise/streamlit_app.py

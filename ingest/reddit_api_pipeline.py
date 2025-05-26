@@ -1,5 +1,6 @@
 import os
 import sys
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import praw
@@ -10,28 +11,48 @@ from constants import REDDIT_CLIENT_ID, REDDIT_SECRET
 reddit = praw.Reddit(
     client_id=REDDIT_CLIENT_ID,
     client_secret=REDDIT_SECRET,
-    user_agent="dlt-reddit-pipeline by /u/PuzzleheadedAge7992"
+    user_agent="dlt-reddit-pipeline by /u/PuzzleheadedAge7992",
 )
 
+
 def fetch_subreddit_posts(subreddit: str, limit: int = 100) -> list[dict]:
+    """
+    Fetches posts from a given subreddit.
+    Args:
+        subreddit (str): The name of the subreddit to fetch posts from.
+        limit (int): The maximum number of posts to fetch. Default is 100.
+    Returns:
+        list[dict]: A list of dictionaries containing post details.
+    """
     sub = reddit.subreddit(subreddit)
     posts = []
 
     for post in sub.hot(limit=limit):
-        posts.append({
-            "id": post.id,
-            "title": post.title,
-            "score": post.score,
-            "author": str(post.author),
-            "created_utc": post.created_utc,
-            "url": post.url,
-            "num_comments": post.num_comments,
-            "subreddit": post.subreddit.display_name
-        })
+        posts.append(
+            {
+                "id": post.id,
+                "title": post.title,
+                "score": post.score,
+                "author": str(post.author),
+                "created_utc": post.created_utc,
+                "url": post.url,
+                "num_comments": post.num_comments,
+                "subreddit": post.subreddit.display_name,
+            }
+        )
 
     return posts
 
+
 def top_subreddits_posts(top_n: int = 20, post_limit: int = 50) -> pl.DataFrame:
+    """
+    Fetches posts from the top N subreddits.
+    Args:
+        top_n (int): The number of top subreddits to fetch posts from. Default is 20.
+        post_limit (int): The maximum number of posts to fetch from each subreddit. Default is 50.
+    Returns:
+        pl.DataFrame: A Polars DataFrame containing posts from the top subreddits.
+    """
     top_subs = reddit.subreddits.popular(limit=top_n)
 
     all_posts = []
@@ -45,16 +66,16 @@ def top_subreddits_posts(top_n: int = 20, post_limit: int = 50) -> pl.DataFrame:
     return df
 
 
-def df_to_file_system(df:pl.DataFrame) -> str:
+def df_to_file_system(df: pl.DataFrame) -> str:
     """
-    Landnerds pipeline to load from a df to s3 storage.
+    Pipeline to load from a df to s3 storage.
 
     Args:
         full_table_name (str): The (full) name of the BigQuery table to load
         df (pl.DataFrame): The Polars DataFrame to load
     Returns:
         statement indicating the table has been saved to the filesystem.
-    
+
     """
     table_name = "posts"
     arrow_table = df.to_arrow()
@@ -62,9 +83,7 @@ def df_to_file_system(df:pl.DataFrame) -> str:
 
     # Create a dlt pipeline object
     pipeline = dlt.pipeline(
-        pipeline_name="rest_api_reddit",
-        destination="filesystem",
-        dataset_name="reddit"
+        pipeline_name="rest_api_reddit", destination="filesystem", dataset_name="reddit"
     )
 
     # Run the pipeline

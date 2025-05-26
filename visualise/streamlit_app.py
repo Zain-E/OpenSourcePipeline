@@ -12,13 +12,15 @@ files = {
     "item": f"{S3_PATH}pokemon_api/item/",
     "location": f"{S3_PATH}pokemon_api/location/",
     "move": f"{S3_PATH}pokemon_api/move/",
-    "version": f"{S3_PATH}pokemon_api/version/"
+    "version": f"{S3_PATH}pokemon_api/version/",
 }
+
 
 @st.cache_data
 def load_data(s3_path):
     df = pd.read_parquet(s3_path, engine="pyarrow")
     return df
+
 
 st.title("Pokémon Data")
 
@@ -35,7 +37,7 @@ except Exception as e:
 if files["pokemon"]:
 
     pokemon_names = df["name"].unique().tolist()
-    selected_pokemon = st.selectbox("Select Name", pokemon_names,index=None)
+    selected_pokemon = st.selectbox("Select Name", pokemon_names, index=None)
 
     # Step 3: Display Pokémon Details
     if selected_pokemon is None:
@@ -49,11 +51,17 @@ if files["pokemon"]:
 
             # Column 1: Regular Pokémon Sprite
             with col1:
-                st.image(data["sprites"]["other"]["dream_world"]["front_default"], width=100, caption="Artwork")
+                st.image(
+                    data["sprites"]["other"]["dream_world"]["front_default"],
+                    width=100,
+                    caption="Artwork",
+                )
 
             # Column 2: Dream World Artwork
             with col2:
-                gif_sprite = data["sprites"]["versions"]["generation-v"]["black-white"]["animated"]["front_default"]
+                gif_sprite = data["sprites"]["versions"]["generation-v"]["black-white"][
+                    "animated"
+                ]["front_default"]
                 if gif_sprite:
                     st.image(gif_sprite, width=100, caption="Animated Sprite")
                 else:
@@ -61,7 +69,11 @@ if files["pokemon"]:
 
             # Column 3: Animated (GIF) Sprite
             with col3:
-                st.image(data["sprites"]["front_default"], width=100, caption="Default Sprite")
+                st.image(
+                    data["sprites"]["front_default"],
+                    width=100,
+                    caption="Default Sprite",
+                )
 
             # Pokémon Cry (Sound)
             cry_url = f"https://play.pokemonshowdown.com/audio/cries/{selected_pokemon.lower()}.mp3"  # Pokémon cry URL

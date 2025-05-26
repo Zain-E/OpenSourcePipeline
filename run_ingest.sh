@@ -5,5 +5,6 @@ chmod +x run_ingest.sh
 source .venv/bin/activate
 
 # Run the ingest pipelines
+python black .
 python ingest/pokemon_api_pipeline.py
 python ingest/landnerds_custom_pipeline.py
