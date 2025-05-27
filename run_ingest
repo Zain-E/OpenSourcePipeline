@@ -1,5 +1,5 @@
 #!/bin/bash
-chmod +x run_ingest.sh
+chmod +x run_ingest
 
 # Activate your virtual environment if needed
 source .venv/bin/activate

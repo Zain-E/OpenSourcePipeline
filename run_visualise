@@ -1,5 +1,5 @@
 #!/bin/bash
-chmod +x run_visualise.sh
+chmod +x run_visualise
 
 # Activate your virtual environment if needed
 source .venv/bin/activate

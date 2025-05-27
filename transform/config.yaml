@@ -9,11 +9,11 @@ gateways:
       # register_comments: False
       # pre_ping: False
       pretty_sql: True
-      aws_access_key_id:
-      aws_secret_access_key:
+      aws_access_key_id: "{{ env_var('AWS_ACCESS_KEY_ID') }}"
+      aws_secret_access_key: "{{ env_var('AWS_SECRET_ACCESS_KEY') }}"
       # role_arn: 
       # role_session_name: 
-      region_name: eu-north-1
+      region_name: "{{ env_var('AWS_REGION_NAME') }}"
       # work_group: 
       s3_staging_dir: s3://1-data-staging/
       # schema_name: 
