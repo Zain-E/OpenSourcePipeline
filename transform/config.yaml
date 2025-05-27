@@ -1,0 +1,28 @@
+gateways:
+  athena:
+    connection:
+      # For more information on configuring the connection to your execution engine, visit:
+      # https://sqlmesh.readthedocs.io/en/stable/reference/configuration/#connections
+      # https://sqlmesh.readthedocs.io/en/stable/integrations/engines/athena/#connection-options
+      type: athena
+      # concurrent_tasks: 4
+      # register_comments: False
+      # pre_ping: False
+      pretty_sql: True
+      aws_access_key_id:
+      aws_secret_access_key:
+      # role_arn: 
+      # role_session_name: 
+      region_name: eu-north-1
+      # work_group: 
+      s3_staging_dir: s3://1-data-staging/
+      # schema_name: 
+      # catalog_name: 
+      s3_warehouse_location: s3://2-data-warehouse/
+
+
+default_gateway: athena
+
+model_defaults:
+  dialect: athena
+  start: 2025-05-25
