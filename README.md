@@ -15,7 +15,7 @@ through a data warehouse and analytical layer.  The purpose of this project is:
 - There still needs to be work to speed up pipeline for large datasets - works fine for tables <100,000 rows or APIs
 - Set up your credentials in ``` .dlt/secrets.toml``` - in this case they are s3 + GoogleBigQuery account credentials
 - If you have added env variables to a `.env` file, use the ```source .env``` command to load them into shell.
-- Run the command ```./run_ingest.sh``` (locally) to run all the ingest pipelines (you can also run them individually if needed per pipeline).
+- Run the command ```./run_ingest``` (locally) to run all the ingest pipelines (you can also run them individually if needed per pipeline).
 - The file ```xxx``` contains dlt run artifacts for observability.
 
 
@@ -51,6 +51,11 @@ The data structure within the warehouse layer is generally agnostic, and for the
 
 
 ## Dashboard
+
+<img src="assets/streamlit_red.svg" alt="Description" width="150" height="150"/>
+
+- Visuals use streamlit (for now) to present the yugioh data.
+- Run the command ```./run_visualise``` (locally) to run streamlit and display the dashboard on http://localhost:8502/
 
 
 ## Linters and other tools
