@@ -5,7 +5,7 @@ through a data warehouse and analytical layer.  The purpose of this project is:
 
 1. To create a cost-efficient pipeline that can be replicated at scale
 2. To utilise non-standard practices that may be better than the oft-repeated "best practice"
-3. To use open-source tools (that are also scalable) as much as possible to compliment point 1. [dlthub](https://dlthub.com/), [Airbyte](https://airbyte.com/product/airbyte-open-source), [SQLMesh](https://sqlmesh.readthedocs.io/en/stable/integrations/dlt/) (and perhaps other services like dagster), and [AWS](https://aws.amazon.com/?nc2=h_lg) are services that will be used in this repo, which can be used as a template for future work.
+3. To use open-source tools (that are also scalable) as much as possible to compliment point 1. [dlthub](https://dlthub.com/), [dagster](https://dagster.io/community), [SQLMesh](https://sqlmesh.readthedocs.io/en/stable/integrations/dlt/) (and perhaps other services like dagster), and [AWS](https://aws.amazon.com/?nc2=h_lg) are services that will be used in this repo, which can be used as a template for future work.
 
 
 ## dltHub Developer Notes
@@ -17,6 +17,11 @@ through a data warehouse and analytical layer.  The purpose of this project is:
 - If you have added env variables to a `.env` file, use the ```source .env``` command to load them into shell.
 - Run the command ```./run_ingest``` (locally) to run all the ingest pipelines (you can also run them individually if needed per pipeline).
 - The file ```xxx``` contains dlt run artifacts for observability.
+
+## Dagster Developer Notes
+
+![dagster](assets/dagster_icon.png)
+
 
 
 ## SQLMesh Developer Notes
